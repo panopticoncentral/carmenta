@@ -1,0 +1,519 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0B4AC94665EDC2C32E1A50C1 /* Sources/Carmenta/PoemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FB966423E1AADD613EF9A9 /* Sources/Carmenta/PoemsView.swift */; };
+		1B600662EACB2FA2C7933226 /* Resources/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5CCDE3F3F267A84D2EBCB493 /* Resources/container-migration.plist */; };
+		1D8B39403857391C781743BB /* Sources/Carmenta/LibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32DEF934DC5E43095EB935 /* Sources/Carmenta/LibraryStore.swift */; };
+		229B927B9ABF79DCC5EDDC24 /* Sources/Carmenta/VenuesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D308D9E1F9D3A7940B89735A /* Sources/Carmenta/VenuesView.swift */; };
+		3D3368E261DDAABCC34EFEE1 /* Sources/Carmenta/SubmissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CCB0BFC9F77FABA308474 /* Sources/Carmenta/SubmissionsView.swift */; };
+		3D9B674F847967CB084FC7CB /* libCarmentaCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93BD9870DB493C6272013959 /* libCarmentaCore.a */; };
+		4CA0E320EA25431EB900F2B9 /* Tests/CarmentaCoreTests/LibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A68F5A0F1BA6B85CD56461 /* Tests/CarmentaCoreTests/LibraryTests.swift */; };
+		56042AD554DBEBD680A873A2 /* Sources/Carmenta/Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D344366AA8BA6337FCBDB46 /* Sources/Carmenta/Theme.swift */; };
+		757F7DAD39BD06CF18F15BB5 /* Resources/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 699B870B155C69511C2F50E7 /* Resources/Assets.xcassets */; };
+		933E07BE259CACA2CA7DACDC /* libCarmentaCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93BD9870DB493C6272013959 /* libCarmentaCore.a */; };
+		BBC7ECD9EC4E9995943E1D1C /* Sources/Carmenta/Editors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EED82B067CA7E2A4BD24143 /* Sources/Carmenta/Editors.swift */; };
+		CE419D4D9295A8B3CFE61542 /* Sources/Carmenta/ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EFD3A44AED73745FC7B87A /* Sources/Carmenta/ContentView.swift */; };
+		CF75F211C3A07D1CA30D00C4 /* Sources/CarmentaCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8120408626ADDEE0F121470D /* Sources/CarmentaCore/Models.swift */; };
+		DD7510AFA817BE0288FFC053 /* Sources/Carmenta/CarmentaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFC82D2B2BD2532B9CAC9F3 /* Sources/Carmenta/CarmentaApp.swift */; };
+		FECB86BD5D0357DFDED3474F /* Sources/Carmenta/OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F6E4BDB23CD452A8A8110D /* Sources/Carmenta/OverviewView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A6B732FCF18EE84C5BDC125E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E703436A99873A42D7D4C41A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 24ADA0D2F7C144753181D402;
+			remoteInfo = CarmentaCore;
+		};
+		E177BC2AF4DF233B4EECB233 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E703436A99873A42D7D4C41A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 24ADA0D2F7C144753181D402;
+			remoteInfo = CarmentaCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		037CCB0BFC9F77FABA308474 /* Sources/Carmenta/SubmissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/SubmissionsView.swift; sourceTree = "<group>"; };
+		0D344366AA8BA6337FCBDB46 /* Sources/Carmenta/Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/Theme.swift; sourceTree = "<group>"; };
+		22F6E4BDB23CD452A8A8110D /* Sources/Carmenta/OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/OverviewView.swift; sourceTree = "<group>"; };
+		369C734E3F0A73419AF06538 /* CarmentaCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarmentaCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		40A68F5A0F1BA6B85CD56461 /* Tests/CarmentaCoreTests/LibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/CarmentaCoreTests/LibraryTests.swift; sourceTree = "<group>"; };
+		43FB966423E1AADD613EF9A9 /* Sources/Carmenta/PoemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/PoemsView.swift; sourceTree = "<group>"; };
+		5CCDE3F3F267A84D2EBCB493 /* Resources/container-migration.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Resources/container-migration.plist"; sourceTree = "<group>"; };
+		699B870B155C69511C2F50E7 /* Resources/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
+		6EED82B067CA7E2A4BD24143 /* Sources/Carmenta/Editors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/Editors.swift; sourceTree = "<group>"; };
+		7BFC82D2B2BD2532B9CAC9F3 /* Sources/Carmenta/CarmentaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/CarmentaApp.swift; sourceTree = "<group>"; };
+		8120408626ADDEE0F121470D /* Sources/CarmentaCore/Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/CarmentaCore/Models.swift; sourceTree = "<group>"; };
+		88EFD3A44AED73745FC7B87A /* Sources/Carmenta/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/ContentView.swift; sourceTree = "<group>"; };
+		93BD9870DB493C6272013959 /* libCarmentaCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCarmentaCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F32DEF934DC5E43095EB935 /* Sources/Carmenta/LibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/LibraryStore.swift; sourceTree = "<group>"; };
+		A7D2AED25D0231BA0683A6D4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D308D9E1F9D3A7940B89735A /* Sources/Carmenta/VenuesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Carmenta/VenuesView.swift; sourceTree = "<group>"; };
+		D70FA576838E1921A01447DE /* Resources/Carmenta.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Resources/Carmenta.entitlements; sourceTree = "<group>"; };
+		EBAFC72444DBE15F1CBBD75B /* Resources/Xcode-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Resources/Xcode-Info.plist"; sourceTree = "<group>"; };
+		F1D520DB65A3B1E4FF8EF703 /* Carmenta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Carmenta.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2202B7AD266019029D99A47C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				933E07BE259CACA2CA7DACDC /* libCarmentaCore.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		95A0E0BE6EEE4108DA400265 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D9B674F847967CB084FC7CB /* libCarmentaCore.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3B5B1E3165C1CAA4D76FDF7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		047179957A6DEDFEF264789D /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				8120408626ADDEE0F121470D /* Sources/CarmentaCore/Models.swift */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		72BE26EC791283B3D9556408 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				40A68F5A0F1BA6B85CD56461 /* Tests/CarmentaCoreTests/LibraryTests.swift */,
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		92DA86AF0F44A2B4FA22502B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				699B870B155C69511C2F50E7 /* Resources/Assets.xcassets */,
+				EBAFC72444DBE15F1CBBD75B /* Resources/Xcode-Info.plist */,
+				D70FA576838E1921A01447DE /* Resources/Carmenta.entitlements */,
+				5CCDE3F3F267A84D2EBCB493 /* Resources/container-migration.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		93834A8E9BB9EEB165BA58E5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F1D520DB65A3B1E4FF8EF703 /* Carmenta.app */,
+				93BD9870DB493C6272013959 /* libCarmentaCore.a */,
+				369C734E3F0A73419AF06538 /* CarmentaCoreTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A384AC91A2DFE482053CD023 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7BFC82D2B2BD2532B9CAC9F3 /* Sources/Carmenta/CarmentaApp.swift */,
+				88EFD3A44AED73745FC7B87A /* Sources/Carmenta/ContentView.swift */,
+				6EED82B067CA7E2A4BD24143 /* Sources/Carmenta/Editors.swift */,
+				9F32DEF934DC5E43095EB935 /* Sources/Carmenta/LibraryStore.swift */,
+				22F6E4BDB23CD452A8A8110D /* Sources/Carmenta/OverviewView.swift */,
+				43FB966423E1AADD613EF9A9 /* Sources/Carmenta/PoemsView.swift */,
+				037CCB0BFC9F77FABA308474 /* Sources/Carmenta/SubmissionsView.swift */,
+				0D344366AA8BA6337FCBDB46 /* Sources/Carmenta/Theme.swift */,
+				D308D9E1F9D3A7940B89735A /* Sources/Carmenta/VenuesView.swift */,
+			);
+			name = App;
+			sourceTree = "<group>";
+		};
+		F5FC46F9F5D508DE8198AB81 = {
+			isa = PBXGroup;
+			children = (
+				A384AC91A2DFE482053CD023 /* App */,
+				047179957A6DEDFEF264789D /* Core */,
+				72BE26EC791283B3D9556408 /* Tests */,
+				92DA86AF0F44A2B4FA22502B /* Resources */,
+				A7D2AED25D0231BA0683A6D4 /* README.md */,
+				93834A8E9BB9EEB165BA58E5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		24ADA0D2F7C144753181D402 /* CarmentaCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 366EB9CBDAEB56409E4142A1 /* Build configuration list for PBXNativeTarget "CarmentaCore" */;
+			buildPhases = (
+				9CC7227921D2CC4D03109B59 /* Sources */,
+				F3B5B1E3165C1CAA4D76FDF7 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CarmentaCore;
+			productName = CarmentaCore;
+			productReference = 93BD9870DB493C6272013959 /* libCarmentaCore.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		7366CEE2851E18FC3EEF72DA /* Carmenta */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03CD5351BE15F5D9D4CB36E9 /* Build configuration list for PBXNativeTarget "Carmenta" */;
+			buildPhases = (
+				0DD56C356F7EFF963990AAA2 /* Sources */,
+				2202B7AD266019029D99A47C /* Frameworks */,
+				A11268B7A7460EE440AA1F38 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B0D1227ABCB1F559990D0B73 /* PBXTargetDependency */,
+			);
+			name = Carmenta;
+			productName = Carmenta;
+			productReference = F1D520DB65A3B1E4FF8EF703 /* Carmenta.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C3AC65811B5984B0B8BAA844 /* CarmentaCoreTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6A7CD55D2E0AF9A678F9CC34 /* Build configuration list for PBXNativeTarget "CarmentaCoreTests" */;
+			buildPhases = (
+				8E121A3A2E46F846A16F0B20 /* Sources */,
+				95A0E0BE6EEE4108DA400265 /* Frameworks */,
+				969A8AB17742409EE3EF8973 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1BBCC0F3D426E8FD16EBD305 /* PBXTargetDependency */,
+			);
+			name = CarmentaCoreTests;
+			productName = CarmentaCoreTests;
+			productReference = 369C734E3F0A73419AF06538 /* CarmentaCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E703436A99873A42D7D4C41A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					7366CEE2851E18FC3EEF72DA = {
+						CreatedOnToolsVersion = 16.0;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.HardenedRuntime = {
+								enabled = 1;
+							};
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = 364B92426F68434BFA05FABA /* Build configuration list for PBXProject "Carmenta" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F5FC46F9F5D508DE8198AB81;
+			productRefGroup = 93834A8E9BB9EEB165BA58E5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7366CEE2851E18FC3EEF72DA /* Carmenta */,
+				24ADA0D2F7C144753181D402 /* CarmentaCore */,
+				C3AC65811B5984B0B8BAA844 /* CarmentaCoreTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		969A8AB17742409EE3EF8973 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A11268B7A7460EE440AA1F38 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				757F7DAD39BD06CF18F15BB5 /* Resources/Assets.xcassets in Resources */,
+				1B600662EACB2FA2C7933226 /* Resources/container-migration.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0DD56C356F7EFF963990AAA2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD7510AFA817BE0288FFC053 /* Sources/Carmenta/CarmentaApp.swift in Sources */,
+				CE419D4D9295A8B3CFE61542 /* Sources/Carmenta/ContentView.swift in Sources */,
+				BBC7ECD9EC4E9995943E1D1C /* Sources/Carmenta/Editors.swift in Sources */,
+				1D8B39403857391C781743BB /* Sources/Carmenta/LibraryStore.swift in Sources */,
+				FECB86BD5D0357DFDED3474F /* Sources/Carmenta/OverviewView.swift in Sources */,
+				0B4AC94665EDC2C32E1A50C1 /* Sources/Carmenta/PoemsView.swift in Sources */,
+				3D3368E261DDAABCC34EFEE1 /* Sources/Carmenta/SubmissionsView.swift in Sources */,
+				56042AD554DBEBD680A873A2 /* Sources/Carmenta/Theme.swift in Sources */,
+				229B927B9ABF79DCC5EDDC24 /* Sources/Carmenta/VenuesView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8E121A3A2E46F846A16F0B20 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CA0E320EA25431EB900F2B9 /* Tests/CarmentaCoreTests/LibraryTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9CC7227921D2CC4D03109B59 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF75F211C3A07D1CA30D00C4 /* Sources/CarmentaCore/Models.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1BBCC0F3D426E8FD16EBD305 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 24ADA0D2F7C144753181D402 /* CarmentaCore */;
+			targetProxy = E177BC2AF4DF233B4EECB233 /* PBXContainerItemProxy */;
+		};
+		B0D1227ABCB1F559990D0B73 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 24ADA0D2F7C144753181D402 /* CarmentaCore */;
+			targetProxy = A6B732FCF18EE84C5BDC125E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		16E7825691C8F589E02D480F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+			};
+			name = Release;
+		};
+		416106DF982F21DA827F50C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.panopticoncentral.carmenta.coretests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		57E71F78C7542889C6B23726 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+			};
+			name = Debug;
+		};
+		7A65020B7403875D003471FD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = Resources/Carmenta.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5KAYG269JK;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Resources/Xcode-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.panopticoncentral.carmenta;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		7DA7B48A99457A48890FAE89 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.panopticoncentral.carmenta.coretests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		99521FA8D3AF904D6E8D196E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B0E7774E77DFD4E948C510C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C908473BE6538F39A5D8B4B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = Resources/Carmenta.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5KAYG269JK;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Resources/Xcode-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.panopticoncentral.carmenta;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		03CD5351BE15F5D9D4CB36E9 /* Build configuration list for PBXNativeTarget "Carmenta" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7A65020B7403875D003471FD /* Debug */,
+				C908473BE6538F39A5D8B4B2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		364B92426F68434BFA05FABA /* Build configuration list for PBXProject "Carmenta" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				99521FA8D3AF904D6E8D196E /* Debug */,
+				B0E7774E77DFD4E948C510C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		366EB9CBDAEB56409E4142A1 /* Build configuration list for PBXNativeTarget "CarmentaCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				57E71F78C7542889C6B23726 /* Debug */,
+				16E7825691C8F589E02D480F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6A7CD55D2E0AF9A678F9CC34 /* Build configuration list for PBXNativeTarget "CarmentaCoreTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7DA7B48A99457A48890FAE89 /* Debug */,
+				416106DF982F21DA827F50C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E703436A99873A42D7D4C41A /* Project object */;
+}

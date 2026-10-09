@@ -10,3 +10,5 @@ for size in 16 32 128 256 512; do
     sips -z "$doubled" "$doubled" "$source_image" --out "$iconset/icon_${size}x${size}@2x.png" >/dev/null
 done
 iconutil -c icns "$iconset" -o Resources/CarmentaIcon.icns
+mkdir -p Resources/Assets.xcassets/AppIcon.appiconset
+cp "$iconset"/*.png Resources/Assets.xcassets/AppIcon.appiconset/

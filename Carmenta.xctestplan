@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "id": "DB891ABD-DC45-4F07-9089-36AF17573C8A",
+      "name": "Default",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {},
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:Carmenta.xcodeproj",
+        "identifier": "C3AC65811B5984B0B8BAA844",
+        "name": "CarmentaCoreTests"
+      }
+    }
+  ],
+  "version": 1
+}
