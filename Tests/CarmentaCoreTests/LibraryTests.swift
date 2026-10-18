@@ -123,4 +123,138 @@ final class LibraryTests: XCTestCase {
         XCTAssertNil(Venue(website: "file:///tmp/example").websiteURL)
         XCTAssertNil(Venue(website: "javascript://example.org").websiteURL)
     }
+
+    private func backups(for file: LibraryFile) -> LibraryBackups {
+        LibraryBackups(directory: file.url.deletingLastPathComponent().appendingPathComponent("Backups"))
+    }
+
+    func testStaleWriterCannotOverwriteAnotherPersonsChanges() throws {
+        let file = LibraryFile(url: try temporaryFile())
+        try file.save(fixture())
+        let paul = try file.snapshot(), anya = try file.snapshot()
+        var anyasEdit = anya.library
+        anyasEdit.poems[0].title = "Anya’s revision"
+        let saved = try file.save(anyasEdit, replacing: anya, backups: backups(for: file))
+        XCTAssertFalse(try file.hasChanged(since: saved))
+        XCTAssertTrue(try file.hasChanged(since: paul))
+        var paulsEdit = paul.library
+        paulsEdit.poems[1].notes = "A later edit from an old copy"
+        XCTAssertThrowsError(try file.save(paulsEdit, replacing: paul, backups: backups(for: file))) {
+            guard case LibraryAccessError.changed = $0 else { return XCTFail("Expected a conflict, got \($0)") }
+        }
+        XCTAssertEqual(try file.load(), anyasEdit)
+        // Explicit reload gives the second person a new, safe starting point.
+        let reloaded = try file.snapshot()
+        paulsEdit = reloaded.library
+        paulsEdit.poems[1].notes = "Now applied to the latest library"
+        _ = try file.save(paulsEdit, replacing: reloaded, backups: backups(for: file))
+        XCTAssertEqual(try file.load().poems[0].title, "Anya’s revision")
+    }
+
+    func testDetectsChangedBytesEvenWhenModificationDateIsUnchanged() throws {
+        let file = LibraryFile(url: try temporaryFile())
+        try file.save(fixture())
+        let snapshot = try file.snapshot()
+        let date = try XCTUnwrap(FileManager.default.attributesOfItem(atPath: file.url.path)[.modificationDate])
+        var modified = snapshot.library
+        modified.poems[0].notes = "Changed by sync"
+        try file.save(modified)
+        try FileManager.default.setAttributes([.modificationDate: date], ofItemAtPath: file.url.path)
+        XCTAssertTrue(try file.hasChanged(since: snapshot))
+    }
+
+    func testDeletionAndCorruptionCannotBeOverwrittenByAnOpenLibrary() throws {
+        let file = LibraryFile(url: try temporaryFile())
+        try file.save(fixture())
+        let snapshot = try file.snapshot()
+        try FileManager.default.removeItem(at: file.url)
+        XCTAssertTrue(try file.hasChanged(since: snapshot))
+        XCTAssertThrowsError(try file.save(snapshot.library, replacing: snapshot, backups: backups(for: file)))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: file.url.path))
+        let corrupt = Data("incomplete sync".utf8)
+        try corrupt.write(to: file.url)
+        XCTAssertThrowsError(try file.snapshot(allowMissing: false))
+        XCTAssertThrowsError(try file.save(snapshot.library, replacing: snapshot, backups: backups(for: file)))
+        XCTAssertEqual(try Data(contentsOf: file.url), corrupt)
+    }
+
+    func testSharedOpenRequiresExistingLibraryAndCreateNeverReplacesOne() throws {
+        let file = LibraryFile(url: try temporaryFile())
+        XCTAssertThrowsError(try file.snapshot(allowMissing: false))
+        let emptySnapshot = try file.snapshot()
+        let existing = fixture()
+        _ = try file.create(existing, backups: backups(for: file))
+        XCTAssertThrowsError(try file.create(Library(), backups: backups(for: file)))
+        XCTAssertThrowsError(try file.save(Library(), replacing: emptySnapshot, backups: backups(for: file)))
+        XCTAssertEqual(try file.load(), existing)
+    }
+
+    func testBackupsPreservePreviousAndNewVersionsWithoutDuplicateCopies() throws {
+        let file = LibraryFile(url: try temporaryFile())
+        let original = fixture()
+        // Keep a compactly encoded source to check that backups preserve exact bytes.
+        let bytes = try JSONEncoder().encode(original)
+        try bytes.write(to: file.url)
+        let backups = backups(for: file)
+        let snapshot = try file.snapshot(backups: backups)
+        _ = try file.snapshot(backups: backups)
+        let originals = try FileManager.default.contentsOfDirectory(at: backups.directory, includingPropertiesForKeys: nil)
+        XCTAssertEqual(originals.count, 1)
+        XCTAssertEqual(try Data(contentsOf: XCTUnwrap(originals.first)), bytes)
+        var edited = original
+        edited.poems[0].notes = "Updated"
+        _ = try file.save(edited, replacing: snapshot, backups: backups)
+        var files = try FileManager.default.contentsOfDirectory(at: backups.directory, includingPropertiesForKeys: nil)
+        XCTAssertEqual(files.count, 2)
+        let versions = try files.map { try LibraryFile(url: $0).load() }
+        XCTAssertTrue(versions.contains(original))
+        XCTAssertTrue(versions.contains(edited), "The most recent edit must be recoverable even before the next launch.")
+        _ = try file.snapshot(backups: backups)
+        files = try FileManager.default.contentsOfDirectory(at: backups.directory, includingPropertiesForKeys: nil)
+        XCTAssertEqual(files.count, 2)
+        XCTAssertTrue(try files.map { try LibraryFile(url: $0).load() }.contains(edited))
+    }
+
+    func testBackupFailureAbortsSaveWithoutChangingLibrary() throws {
+        let file = LibraryFile(url: try temporaryFile())
+        try file.save(fixture())
+        let snapshot = try file.snapshot()
+        let original = try Data(contentsOf: file.url)
+        let blockedDirectory = file.url.deletingLastPathComponent().appendingPathComponent("not-a-directory")
+        try Data("occupied".utf8).write(to: blockedDirectory)
+        var edited = snapshot.library
+        edited.poems[0].title = "Must not be written"
+        XCTAssertThrowsError(try file.save(edited, replacing: snapshot, backups: LibraryBackups(directory: blockedDirectory)))
+        XCTAssertEqual(try Data(contentsOf: file.url), original)
+    }
+
+    func testSnapshotFromAnotherLibraryCannotAuthorizeSave() throws {
+        let first = LibraryFile(url: try temporaryFile()), second = LibraryFile(url: try temporaryFile())
+        let library = fixture()
+        try first.save(library)
+        try second.save(library)
+        XCTAssertThrowsError(try second.save(Library(), replacing: first.snapshot(), backups: backups(for: second)))
+        XCTAssertEqual(try second.load(), library)
+    }
+
+    func testConcurrentCoordinatedWritersAllowOnlyOneSaveFromSameSnapshot() throws {
+        let file = LibraryFile(url: try temporaryFile())
+        try file.save(fixture())
+        let snapshot = try file.snapshot(), backups = backups(for: file)
+        let saved = expectation(description: "One writer saves")
+        let rejected = expectation(description: "The other writer sees a conflict")
+        for title in ["First writer", "Second writer"] {
+            DispatchQueue.global().async {
+                var edited = snapshot.library
+                edited.poems[0].title = title
+                do {
+                    _ = try file.save(edited, replacing: snapshot, backups: backups)
+                    saved.fulfill()
+                } catch LibraryAccessError.changed { rejected.fulfill() }
+                catch { XCTFail("Unexpected save failure: \(error)") }
+            }
+        }
+        wait(for: [saved, rejected], timeout: 10)
+        XCTAssertTrue(["First writer", "Second writer"].contains(try file.load().poems[0].title))
+    }
 }

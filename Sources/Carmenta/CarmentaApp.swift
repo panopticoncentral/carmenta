@@ -12,11 +12,21 @@ struct CarmentaApp: App {
         .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(replacing: .newItem) {
-                Button("New Poem…") { NotificationCenter.default.post(name: .newPoem, object: nil) }.keyboardShortcut("n")
-                Button("New Journal or Contest…") { NotificationCenter.default.post(name: .newVenue, object: nil) }.keyboardShortcut("n", modifiers: [.command, .shift])
-                Button("New Submission…") { NotificationCenter.default.post(name: .newSubmission, object: nil) }.keyboardShortcut("n", modifiers: [.command, .option])
+                Button("New Poem…") { NotificationCenter.default.post(name: .newPoem, object: nil) }.keyboardShortcut("n").disabled(!store.canEdit || store.editorCount > 0)
+                Button("New Journal or Contest…") { NotificationCenter.default.post(name: .newVenue, object: nil) }.keyboardShortcut("n", modifiers: [.command, .shift]).disabled(!store.canEdit || store.editorCount > 0)
+                Button("New Submission…") { NotificationCenter.default.post(name: .newSubmission, object: nil) }.keyboardShortcut("n", modifiers: [.command, .option]).disabled(!store.canEdit || store.editorCount > 0)
                 Divider()
-                Button("Export Library…") { store.exportLibrary() }.disabled(store.loadError != nil)
+                Button("Create Shared Library Folder…") { Task { await store.chooseSharedFolder(create: true) } }
+                    .disabled(!store.canSwitchLibrary || !store.canEdit)
+                Button("Open Shared Library Folder…") { Task { await store.chooseSharedFolder(create: false) } }
+                    .disabled(!store.canSwitchLibrary)
+                Button("Open Local Library") { Task { await store.useLocalLibrary() } }
+                    .disabled(!store.canSwitchLibrary || !store.isShared)
+                Divider()
+                Button("Load Latest Library") { Task { await store.reload() } }
+                    .disabled(!store.canSwitchLibrary)
+                Button("Show Library Backups") { store.showBackups() }.disabled(store.isDemo)
+                Button("Export Library…") { Task { await store.exportLibrary() } }.disabled(store.loadError != nil || store.isBusy)
             }
         }
     }

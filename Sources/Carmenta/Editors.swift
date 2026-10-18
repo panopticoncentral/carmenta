@@ -17,15 +17,22 @@ struct EditorFrame<Content: View>: View {
             }.frame(maxWidth: .infinity, alignment: .leading).padding(26)
             Divider()
             content()
-            if let error = store.error { Text(error).font(.caption).foregroundStyle(.red).padding(.horizontal, 24).padding(.bottom, 12) }
+            if let issue = store.syncIssue {
+                Text("\(issue) Your edits are still shown here. Copy anything you want to keep, cancel this editor, and load the latest library.")
+                    .font(.caption).foregroundStyle(.orange).textSelection(.enabled).padding(.horizontal, 24).padding(.bottom, 12)
+            }
+            if store.syncIssue == nil, let error = store.error { Text(error).font(.caption).foregroundStyle(.red).padding(.horizontal, 24).padding(.bottom, 12) }
             Divider()
             HStack {
-                Text(store.isDemo ? "Sample library · not saved" : "Saved privately on this Mac").font(.system(size: 11)).foregroundStyle(.secondary)
+                Text(store.isDemo ? "Sample library · not saved" : store.locationLabel).font(.system(size: 11)).foregroundStyle(.secondary)
                 Spacer()
-                Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction)
-                Button("Save", action: save).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction).disabled(!canSave)
+                Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction).disabled(store.isBusy)
+                Button("Save", action: save).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction).disabled(!canSave || !store.canEdit)
             }.padding(20)
-        }.frame(width: 590).onAppear { store.error = nil }
+        }.frame(width: 590)
+            .interactiveDismissDisabled(store.isBusy)
+            .onAppear { store.error = nil; store.editorCount += 1 }
+            .onDisappear { store.editorCount = max(0, store.editorCount - 1) }
     }
 }
 
@@ -36,7 +43,7 @@ struct PoemEditor: View {
     @FocusState private var titleFocused: Bool
     var body: some View {
         EditorFrame(title: store.library.poem(poem.id) == nil ? "A new poem" : "Your poem", subtitle: "A title, a stage, and anything you want to remember.", canSave: !poem.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) {
-            if store.save(poem) { dismiss() }
+            Task { if await store.save(poem) { dismiss() } }
         } content: {
             Form {
                 SwiftUI.Section {
@@ -61,7 +68,7 @@ struct VenueEditor: View {
     }
     var body: some View {
         EditorFrame(title: store.library.venue(venue.id) == nil ? "A place for your work" : "Destination details", subtitle: "Keep the details that will help you choose where to send.", canSave: valid) {
-            if store.save(venue) { dismiss() }
+            Task { if await store.save(venue) { dismiss() } }
         } content: {
             Form {
                 SwiftUI.Section {
@@ -104,7 +111,7 @@ struct SubmissionEditor: View {
     var body: some View {
         EditorFrame(title: store.library.submissions.contains(where: { $0.id == submission.id }) ? "Submission details" : "Send your work into the world", subtitle: "Link a destination and poems, then record each response.", canSave: valid) {
             if submission.isPending { submission.completedAt = nil }
-            if store.save(submission) { dismiss() }
+            Task { if await store.save(submission) { dismiss() } }
         } content: {
             Form {
                 SwiftUI.Section {

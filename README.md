@@ -55,9 +55,31 @@ The sandboxed Xcode and TestFlight builds use:
 
 The Xcode app includes a container migration manifest asking macOS to copy the original `Carmenta` application-support folder on the first sandboxed launch. Export a backup before switching builds. Once migrated, the two builds have separate libraries; use the sandboxed version consistently. Migration needs verification with a developer-signed build on your Mac.
 
-Writes are atomic. Invalid relationships are rejected before saving, and load errors block editing to protect the existing file. Poems and destinations with submission history cannot be deleted until the linked records are removed. File → Export Library saves a portable JSON copy of the complete library. There is no in-app import yet; to restore an export, quit Carmenta, back up the current library, and replace `library.json` with the export.
+Writes are atomic and coordinated with macOS. Before each edit is saved, Carmenta compares the file’s exact contents with the version it loaded. A changed, deleted, unavailable, or conflicted file blocks saving. Invalid relationships are rejected before saving, and load errors block editing to protect the existing file. Poems and destinations with submission history cannot be deleted until the linked records are removed. File → Export Library saves a portable JSON copy of the complete library, using a different filename from the open library.
 
-This version is local to one Mac, with no account or sync. Use one running app instance for your real library; cross-process editing is not supported yet. The independent `CarmentaCore` module contains the Codable models, validation, and persistence so a future iOS app can reuse them.
+### Sharing a library with iCloud Drive
+
+Both people need the updated app. Start with the Mac containing the library you want to share:
+
+1. Choose **File → Create Shared Library Folder…** and select a new folder in iCloud Drive. This copies your current library into `library.json` in that folder and switches Carmenta to the shared copy. An existing library is never overwritten by this command.
+2. Share that folder in Finder with the other person, granting permission to make changes. Wait for the upload to finish.
+3. On the other Mac, accept the folder invitation, wait for it to download, and choose **File → Open Shared Library Folder…**. Select the same shared folder. Opening a folder requires an existing, valid `library.json`; it never creates an empty replacement.
+
+Carmenta remembers the selected folder across launches, including in the sandboxed Xcode/TestFlight app. The sidebar identifies the shared folder and offers **Show Library in Finder**. **File → Open Local Library** returns to that Mac’s separate local library; changes in the shared copy are not copied back automatically. The folder picker also works with ordinary local folders for testing.
+
+**Take turns having the library open.** Finish saving, quit Carmenta, and wait for iCloud to finish uploading before handing over. The other person should wait for the updated file to download before opening Carmenta. Finder’s sync status is the place to check the handoff; Carmenta cannot confirm that another Mac has received an upload.
+
+While active, Carmenta checks for external changes every three seconds and when returning to the app. Every save checks again under macOS file coordination. A detected change pauses editing and offers **Load Latest**. If an editor is open, its unsaved text remains visible: copy anything you want to keep, cancel the editor (including any nested editor), then load the latest library and reapply your changes. Reloading and switching libraries are disabled while an editor is open. Carmenta requests downloads for iCloud files that aren’t current and blocks editing when iCloud reports unresolved file versions.
+
+This supports sequential editing, not simultaneous collaboration or automatic merging. File coordination protects cooperating processes on the same Mac; it is not a lock across two Macs. A remote edit that iCloud hasn’t delivered yet cannot be detected. Both people must still follow the handoff above and avoid editing offline during a handoff.
+
+### Automatic backups and recovery
+
+Carmenta keeps dated JSON backups **on each Mac**, outside the shared folder, under its application-support `Carmenta/Backups` directory. Each library location has its own subfolder. Before each save, backups preserve both the exact previous file and the new version, so even your last edit is recoverable if a later sync replaces it. Valid versions received when opening or reloading are also backed up. Identical contents are stored once. Backups are retained until you remove them; they are not automatically pruned. A backup failure prevents the associated save or load. If the library write fails after backups succeed, a recovery copy of that attempted save remains in the backup folder.
+
+Choose **File → Show Library Backups** to find the copies for the current library. To restore one, finish editing and quit Carmenta on both Macs, keep a separate copy of the current `library.json`, then copy the chosen backup into the shared folder under the name `library.json`. Wait for iCloud to sync to both Macs before reopening. Exported libraries can be restored the same way. There is no in-app import or conflict-merging interface yet; do not discard an iCloud conflict version until you have preserved and compared both copies.
+
+The independent `CarmentaCore` module contains the Codable models, validation, and persistence so a future iOS app can reuse them.
 
 ## Keyboard shortcuts
 
@@ -75,6 +97,8 @@ This version is local to one Mac, with no account or sync. Use one running app i
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcrun swift test
 ```
 
-Tests cover persistence round trips, partial responses, simultaneous submissions, relationship integrity, invalid dates, schema compatibility, and preservation of saved data after failures.
+Tests cover persistence round trips, partial responses, simultaneous submissions, relationship integrity, invalid dates, schema compatibility, stale and concurrent writers, deleted or corrupt libraries, safe shared-library creation, backup contents, and preservation of saved data after backup failures. File coordination tests need access to the macOS file-coordination service; a restricted command sandbox may block them.
+
+Before distributing a signed build, verify the iCloud handoff on two Macs: create and share a library, open it on the second Mac, relaunch to check saved folder access, edit and hand over, then deliberately leave an editor open while a change arrives and confirm that Save is blocked. Also verify a cloud-only file downloads before opening. These checks require real iCloud accounts and are not simulated by the unit tests.
 
 In Xcode, use **Product → Test** (⌘U) with the **Carmenta** scheme. The shared `Carmenta.xctestplan` runs the same tests against the native `CarmentaCore` target. No third-party packages or cloud setup scripts are needed.

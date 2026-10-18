@@ -1,21 +1,22 @@
 import Foundation
+import CryptoKit
 
-public enum PoemStage: String, Codable, CaseIterable, Identifiable {
+public enum PoemStage: String, Codable, CaseIterable, Identifiable, Sendable {
     case draft = "Draft", revising = "Revising", ready = "Ready to submit", published = "Published"
     public var id: String { rawValue }
 }
 
-public enum VenueKind: String, Codable, CaseIterable, Identifiable {
+public enum VenueKind: String, Codable, CaseIterable, Identifiable, Sendable {
     case journal = "Journal", contest = "Contest"
     public var id: String { rawValue }
 }
 
-public enum Outcome: String, Codable, CaseIterable, Identifiable {
+public enum Outcome: String, Codable, CaseIterable, Identifiable, Sendable {
     case pending = "Pending", accepted = "Accepted", declined = "Declined", withdrawn = "Withdrawn"
     public var id: String { rawValue }
 }
 
-public struct Poem: Identifiable, Codable, Equatable {
+public struct Poem: Identifiable, Codable, Equatable, Sendable {
     public var id: UUID
     public var title: String
     public var stage: PoemStage
@@ -28,7 +29,7 @@ public struct Poem: Identifiable, Codable, Equatable {
     }
 }
 
-public struct Venue: Identifiable, Codable, Equatable {
+public struct Venue: Identifiable, Codable, Equatable, Sendable {
     public var id: UUID
     public var name: String
     public var kind: VenueKind
@@ -48,7 +49,7 @@ public struct Venue: Identifiable, Codable, Equatable {
     }
 }
 
-public struct SubmissionEntry: Identifiable, Codable, Equatable {
+public struct SubmissionEntry: Identifiable, Codable, Equatable, Sendable {
     public var poemID: UUID
     public var outcome: Outcome
     public var id: UUID { poemID }
@@ -57,7 +58,7 @@ public struct SubmissionEntry: Identifiable, Codable, Equatable {
     }
 }
 
-public struct Submission: Identifiable, Codable, Equatable {
+public struct Submission: Identifiable, Codable, Equatable, Sendable {
     public var id: UUID
     public var venueID: UUID
     public var entries: [SubmissionEntry]
@@ -77,7 +78,7 @@ public struct Submission: Identifiable, Codable, Equatable {
     }
 }
 
-public struct Library: Codable, Equatable {
+public struct Library: Codable, Equatable, Sendable {
     public var version: Int = 1
     public var poems: [Poem] = []
     public var venues: [Venue] = []
@@ -118,21 +119,162 @@ public enum LibraryError: LocalizedError {
     public var errorDescription: String? { if case .invalid(let message) = self { return message }; return nil }
 }
 
-public struct LibraryFile {
+public enum LibraryAccessError: LocalizedError {
+    case changed, missing, downloading, cloudConflict
+
+    public var errorDescription: String? {
+        switch self {
+        case .changed: return "The library changed outside Carmenta. Close any editor, then load the latest library before making changes."
+        case .missing: return "The library file is missing. Wait for iCloud to sync, or choose its folder again. Carmenta won’t replace it with an empty library."
+        case .downloading: return "iCloud hasn’t downloaded the latest library yet. Wait for it to finish, then try again."
+        case .cloudConflict: return "iCloud reports conflicting versions of this library. Editing is paused. Preserve both versions and resolve the conflict before reopening the library."
+        }
+    }
+}
+
+/// Keeps the decoded records and the exact bytes they came from together.
+public struct LibrarySnapshot: Sendable {
+    public let library: Library
+    public var isNew: Bool { data == nil }
+    fileprivate let url: URL
+    fileprivate let data: Data?
+}
+
+/// Backups live outside the shared folder and are never automatically removed.
+public struct LibraryBackups: Sendable {
+    public let directory: URL
+    public init(directory: URL) { self.directory = directory }
+
+    public func preserve(_ data: Data) throws {
+        let manager = FileManager.default
+        try manager.createDirectory(at: directory, withIntermediateDirectories: true)
+        let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        let suffix = "-\(digest).json"
+        // Opening an unchanged library doesn't need another identical backup.
+        if try manager.contentsOfDirectory(atPath: directory.path).contains(where: { $0.hasSuffix(suffix) }) { return }
+        let stamp = ISO8601DateFormatter().string(from: .now).replacingOccurrences(of: ":", with: "-")
+        let name = "library-\(stamp)-\(UUID().uuidString)\(suffix)"
+        try data.write(to: directory.appendingPathComponent(name), options: .atomic)
+    }
+}
+
+public struct LibraryFile: Sendable {
     public let url: URL
     public init(url: URL) { self.url = url }
+
     public func load() throws -> Library {
-        guard FileManager.default.fileExists(atPath: url.path) else { return Library() }
-        let library = try JSONDecoder().decode(Library.self, from: Data(contentsOf: url))
-        try library.validate()
-        return library
+        try snapshot().library
     }
+
+    public func snapshot(allowMissing: Bool = true, backups: LibraryBackups? = nil) throws -> LibrarySnapshot {
+        try coordinated(writing: false) { coordinatedURL in
+            let data = try Self.readBytes(at: coordinatedURL)
+            guard let data else {
+                guard allowMissing else { throw LibraryAccessError.missing }
+                return LibrarySnapshot(library: Library(), url: url, data: nil)
+            }
+            let library = try JSONDecoder().decode(Library.self, from: data)
+            try library.validate()
+            try backups?.preserve(data)
+            return LibrarySnapshot(library: library, url: url, data: data)
+        }
+    }
+
+    public func hasChanged(since snapshot: LibrarySnapshot) throws -> Bool {
+        try coordinated(writing: false) { coordinatedURL in
+            if snapshot.url != url { return true }
+            return try Self.readBytes(at: coordinatedURL) != snapshot.data
+        }
+    }
+
+    /// Export only. Editing an open library must use the checked save below.
     public func save(_ library: Library) throws {
+        let data = try Self.encode(library)
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try coordinated(writing: true) { try data.write(to: $0, options: .atomic) }
+    }
+
+    public func save(_ library: Library, replacing snapshot: LibrarySnapshot, backups: LibraryBackups) throws -> LibrarySnapshot {
+        guard snapshot.url == url else { throw LibraryAccessError.changed }
+        return try checkedSave(library, expected: snapshot.data, backups: backups)
+    }
+
+    /// Creates a library only if the destination still doesn't exist at write time.
+    public func create(_ library: Library, backups: LibraryBackups) throws -> LibrarySnapshot {
+        do { return try checkedSave(library, expected: nil, backups: backups) }
+        catch LibraryAccessError.changed {
+            throw LibraryError.invalid("That folder already contains a library. Use Open Shared Library Folder to open it, or choose a different folder for the copy.")
+        }
+    }
+
+    private func checkedSave(_ library: Library, expected: Data?, backups: LibraryBackups) throws -> LibrarySnapshot {
+        let data = try Self.encode(library)
+        // The caller creates the local application-support directory. Never recreate
+        // a missing shared folder here: it may have been moved or unshared.
+        return try coordinated(writing: true) { coordinatedURL in
+            let current = try Self.readBytes(at: coordinatedURL)
+            guard current == expected else { throw LibraryAccessError.changed }
+            if let current { try backups.preserve(current) }
+            // Preserve the new version too, so a later iCloud overwrite cannot
+            // erase this Mac's last edit. If writing fails, this remains a useful
+            // recovery copy of the attempted save.
+            try backups.preserve(data)
+            try data.write(to: coordinatedURL, options: .atomic)
+            return LibrarySnapshot(library: library, url: url, data: data)
+        }
+    }
+
+    private static func encode(_ library: Library) throws -> Data {
         try library.validate()
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        let data = try encoder.encode(library)
-        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try data.write(to: url, options: .atomic)
+        return try encoder.encode(library)
+    }
+
+    private static func isMissing(_ error: Error) -> Bool {
+        let error = error as NSError
+        return error.domain == NSCocoaErrorDomain &&
+            [NSFileReadNoSuchFileError, NSFileNoSuchFileError].contains(error.code)
+    }
+
+    private static func checkAvailability(at url: URL) throws {
+        var url = url
+        url.removeAllCachedResourceValues()
+        let values: URLResourceValues
+        do { values = try url.resourceValues(forKeys: [.isUbiquitousItemKey, .ubiquitousItemDownloadingStatusKey]) }
+        catch { if isMissing(error) { return }; throw error }
+        if values.isUbiquitousItem == true {
+            if let status = values.ubiquitousItemDownloadingStatus, status != .current {
+                try FileManager.default.startDownloadingUbiquitousItem(at: url)
+                throw LibraryAccessError.downloading
+            }
+            if !(NSFileVersion.unresolvedConflictVersionsOfItem(at: url) ?? []).isEmpty {
+                throw LibraryAccessError.cloudConflict
+            }
+        }
+    }
+
+    private static func readBytes(at url: URL) throws -> Data? {
+        try checkAvailability(at: url)
+        do { return try Data(contentsOf: url) }
+        catch { if isMissing(error) { return nil }; throw error }
+    }
+
+    private func coordinated<T>(writing: Bool, _ body: (URL) throws -> T) throws -> T {
+        // Check first so an evicted iCloud item requests a download without
+        // blocking inside coordination. The accessor checks again before use.
+        try Self.checkAvailability(at: url)
+        let coordinator = NSFileCoordinator()
+        var coordinationError: NSError?
+        var result: Result<T, Error>?
+        let accessor: (URL) -> Void = { coordinatedURL in result = Result { try body(coordinatedURL) } }
+        if writing {
+            coordinator.coordinate(writingItemAt: url, options: [], error: &coordinationError, byAccessor: accessor)
+        } else {
+            coordinator.coordinate(readingItemAt: url, options: [], error: &coordinationError, byAccessor: accessor)
+        }
+        if let coordinationError { throw coordinationError }
+        guard let result else { throw LibraryError.invalid("Carmenta couldn’t access the library. Please try again.") }
+        return try result.get()
     }
 }

@@ -34,9 +34,17 @@ struct ContentView: View {
                 Spacer()
                 VStack(alignment: .leading, spacing: 10) {
                     Rectangle().fill(.primary.opacity(0.08)).frame(height: 1)
-                    Label(store.isDemo ? "Sample library" : "Saved on this Mac", systemImage: store.isDemo ? "sparkles" : "internaldrive")
+                    Label(store.locationLabel, systemImage: store.isDemo ? "sparkles" : (store.isShared ? "folder.badge.person.crop" : "internaldrive"))
                         .font(.system(size: 11)).foregroundStyle(.secondary)
                     if store.isDemo { Text("Fictional records · changes aren’t saved").font(.system(size: 10)).foregroundStyle(.secondary) }
+                    else {
+                        if store.isShared {
+                            Text(store.file.url.deletingLastPathComponent().lastPathComponent).font(.caption).lineLimit(1).help(store.file.url.path)
+                            Text("Take turns: quit, let iCloud sync, then hand over.").font(.system(size: 10)).foregroundStyle(.secondary)
+                        }
+                        Button("Show Library in Finder") { NSWorkspace.shared.activateFileViewerSelecting([store.file.url]) }
+                            .font(.system(size: 10)).buttonStyle(.link)
+                    }
                 }.padding(22)
             }.navigationSplitViewColumnWidth(min: 210, ideal: 225, max: 270)
         } detail: {
@@ -46,17 +54,29 @@ struct ContentView: View {
                     Text("Your existing file has been preserved.").foregroundStyle(.secondary)
                     HStack {
                         Button("Show Library File") { NSWorkspace.shared.activateFileViewerSelecting([store.file.url]) }
-                        Button("Try Again") { store.reload() }.buttonStyle(.borderedProminent)
+                        Button("Try Again") { Task { await store.reload() } }.buttonStyle(.borderedProminent).disabled(store.isBusy)
+                        Button("Choose Shared Folder…") { Task { await store.chooseSharedFolder(create: false) } }.disabled(!store.canSwitchLibrary)
                     }.padding(.bottom, 50)
                 }
             } else {
-                Group {
-                    switch section ?? .overview {
-                    case .overview: OverviewView(section: $section, editor: $editor)
-                    case .poems: PoemsView(editor: $editor)
-                    case .venues: VenuesView(editor: $editor)
-                    case .submissions: SubmissionsView(editor: $editor)
+                VStack(spacing: 0) {
+                    if let issue = store.syncIssue {
+                        HStack(spacing: 16) {
+                            Label { Text(issue).textSelection(.enabled) } icon: { Image(systemName: "exclamationmark.arrow.triangle.2.circlepath") }
+                                .font(.callout)
+                            Spacer()
+                            Button("Load Latest") { Task { await store.reload() } }.disabled(!store.canSwitchLibrary)
+                        }.padding(18).background(Palette.gold.opacity(0.12))
                     }
+                    Group {
+                        switch section ?? .overview {
+                        case .overview: OverviewView(section: $section, editor: $editor)
+                        case .poems: PoemsView(editor: $editor)
+                        case .venues: VenuesView(editor: $editor)
+                        case .submissions: SubmissionsView(editor: $editor)
+                        }
+                    }.disabled(!store.canEdit)
+                    if store.isBusy { ProgressView("Checking library…").controlSize(.small).padding(8) }
                 }.background(Palette.canvas)
             }
         }
@@ -70,8 +90,18 @@ struct ContentView: View {
         .alert("Unable to update library", isPresented: Binding(get: { store.error != nil && editor == nil }, set: { if !$0 { store.error = nil } })) {
             Button("OK") { store.error = nil }
         } message: { Text(store.error ?? "") }
-        .onReceive(NotificationCenter.default.publisher(for: .newPoem)) { _ in if store.loadError == nil { editor = .poem(Poem()) } }
-        .onReceive(NotificationCenter.default.publisher(for: .newVenue)) { _ in if store.loadError == nil { editor = .venue(Venue()) } }
-        .onReceive(NotificationCenter.default.publisher(for: .newSubmission)) { _ in if store.loadError == nil { editor = .submission(nil) } }
+        .onReceive(NotificationCenter.default.publisher(for: .newPoem)) { _ in if store.canEdit && editor == nil { editor = .poem(Poem()) } }
+        .onReceive(NotificationCenter.default.publisher(for: .newVenue)) { _ in if store.canEdit && editor == nil { editor = .venue(Venue()) } }
+        .onReceive(NotificationCenter.default.publisher(for: .newSubmission)) { _ in if store.canEdit && editor == nil { editor = .submission(nil) } }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            Task { await store.checkForExternalChanges() }
+        }
+        .task {
+            await store.reload()
+            while !Task.isCancelled {
+                do { try await Task.sleep(for: .seconds(3)) } catch { break }
+                if NSApplication.shared.isActive { await store.checkForExternalChanges() }
+            }
+        }
     }
 }
